@@ -68,6 +68,7 @@ class GuzzleServiceProvider implements ServiceProviderInterface
             // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
             $client->getEventDispatcher()->addListener('client.create_request', function (\Guzzle\Common\Event $e) use ($app) {
                 $e['request']->getQuery()->set('apikey', $app['wws.api_key']);
+                $e['request']->getCurlOptions()->set(CURLOPT_TCP_NODELAY, 1);
             });
 
             foreach ($app['guzzle.plugins'] as $plugin) {
