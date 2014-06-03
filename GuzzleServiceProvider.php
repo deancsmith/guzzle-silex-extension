@@ -34,6 +34,10 @@ class GuzzleServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['guzzle.base_url'] = '/';
+        $app['guzzle.api_version'] = 'v1';
+        $app['guzzle.default.headers'] = array();
+        $app['guzzle.default.query'] = array();
+        $app['guzzle.default.auth'] = array();
         $app['guzzle.plugins'] = array();
 
         // Register a Guzzle ServiceBuilder
@@ -49,7 +53,16 @@ class GuzzleServiceProvider implements ServiceProviderInterface
 
         // Register a simple Guzzle Client object (requires absolute URLs when guzzle.base_url is unset)
         $app['guzzle.client'] = $app->share(function() use ($app) {
-            $client = new Client($app['guzzle.base_url']);
+            $client = new Client();
+            
+            $client = new Client([
+                'base_url' => [$app['guzzle.base_url'] . '{version}', ['version' => $app['guzzle.api_version']]],
+                'defaults' => [
+                    'headers' => $app['guzzle.default.headers'],
+                    'query'   => $app['guzzle.default.query'],
+                    'auth'    => $app['guzzle.default.auth']
+                ]
+            ]);
 
             foreach ($app['guzzle.plugins'] as $plugin) {
                 $client->addSubscriber($plugin);
