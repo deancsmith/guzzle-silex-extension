@@ -34,7 +34,9 @@ class GuzzleServiceProvider implements ServiceProviderInterface
     public function register(Application $app)
     {
         $app['guzzle.base_url'] = '/';
+        $app['guzzle.api_version'] = 'v1';
         $app['guzzle.default.headers'] = array();
+        $app['guzzle.default.query'] = array();
         $app['guzzle.plugins'] = array();
 
         // Register a Guzzle ServiceBuilder
@@ -52,7 +54,21 @@ class GuzzleServiceProvider implements ServiceProviderInterface
         $app['guzzle.client'] = $app->share(function() use ($app) {
             $client = new Client($app['guzzle.base_url']);
 
+            $client = new Client($app['guzzle.base_url'] . '{version}', array(
+                'version'        => $app['guzzle.api_version'],
+                'request.options' => array(
+                    'headers' => $app['guzzle.default.headers'],
+                    'query'   => $app['guzzle.default.query']
+                )
+            ));
+
             $client->setDefaultHeaders($app['guzzle.default.headers']);
+
+            // Add apikey to query before every query
+            // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
+            $client->getEventDispatcher()->addListener('client.create_request', function (\Guzzle\Common\Event $e) {
+                $e['request']->getQuery()->set('apikey', '');
+            });
 
             foreach ($app['guzzle.plugins'] as $plugin) {
                 $client->addSubscriber($plugin);
