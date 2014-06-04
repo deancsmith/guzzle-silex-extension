@@ -67,7 +67,10 @@ class GuzzleServiceProvider implements ServiceProviderInterface
             // Add apikey to query before every query
             // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
             $client->getEventDispatcher()->addListener('client.create_request', function (\Guzzle\Common\Event $e) use ($app) {
-                $e['request']->getQuery()->set('apikey', $app['wws.api_key']);
+                
+                $query = $e['request']->getQuery();
+                $query->set('api_key', $app['wws.api_key']);
+                $query->set('api_instance', $app['wws.api_instance']);
                 $e['request']->getCurlOptions()->set(CURLOPT_TCP_NODELAY, 1);
             });
 
