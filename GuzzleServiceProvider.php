@@ -59,7 +59,8 @@ class GuzzleServiceProvider implements ServiceProviderInterface
                 $query = $e->getRequest()->getQuery();
                 $query->set('api_key', $app['wws.api_key']);
                 $query->set('api_instance', $app['wws.api_instance']);
-                $e->getRequest()->getCurlOptions()->set(CURLOPT_TCP_NODELAY, 1);
+
+                $e->getRequest()->getConfig()->set('curl', [ CURLOPT_TCP_NODELAY, 1]);
             });
 
             foreach ($app['guzzle.plugins'] as $plugin) {
