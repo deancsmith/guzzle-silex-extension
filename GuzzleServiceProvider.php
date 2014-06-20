@@ -4,8 +4,7 @@ namespace Guzzle;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use Guzzle\Service\Builder\ServiceBuilder;
-use Guzzle\Service\Client;
+use GuzzleHttp;
 
 /**
  * Guzzle service provider for Silex
@@ -39,21 +38,8 @@ class GuzzleServiceProvider implements ServiceProviderInterface
         $app['guzzle.default.query'] = array();
         $app['guzzle.plugins'] = array();
 
-        // Register a Guzzle ServiceBuilder
-        $app['guzzle'] = $app->share(function () use ($app) {
-            if (!isset($app['guzzle.services'])) {
-                $builder = new ServiceBuilder(array());
-            } else {
-                $builder = ServiceBuilder::factory($app['guzzle.services']);
-            }
-
-            return $builder;
-        });
-
         // Register a simple Guzzle Client object (requires absolute URLs when guzzle.base_url is unset)
         $app['guzzle.client'] = $app->share(function() use ($app) {
-            $client = new Client($app['guzzle.base_url']);
-
             $client = new Client($app['guzzle.base_url'] . '{version}', array(
                 'version'        => $app['guzzle.api_version'],
                 'request.options' => array(
