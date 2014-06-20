@@ -41,7 +41,7 @@ class GuzzleServiceProvider implements ServiceProviderInterface
         // Register a simple Guzzle Client object (requires absolute URLs when guzzle.base_url is unset)
         $app['guzzle.client'] = $app->share(function() use ($app) {
             $client = new \GuzzleHttp\Client([
-                'base_url' => [$app['guzzle.base_url'] . '{version}', ['version' => $app['guzzle.api_version']]],
+                'base_url' => [$app['guzzle.base_url'] . $app['guzzle.api_version']],
                 'defaults' => [
                     'headers' => $app['guzzle.default.headers'],
                     'query'   => $app['guzzle.default.query'],
