@@ -47,16 +47,14 @@ class GuzzleServiceProvider implements ServiceProviderInterface
                     'auth'    => [],
                     'proxy'   => ''
                 ]
-            ])
-        ));
-            
+            ]);
 
             //$client->setDefaultHeaders($app['guzzle.default.headers']);
 
             // Add apikey to query before every query
             // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
             $client->getEventDispatcher()->addListener('client.create_request', function (\Guzzle\Common\Event $e) use ($app) {
-                
+
                 $query = $e['request']->getQuery();
                 $query->set('api_key', $app['wws.api_key']);
                 $query->set('api_instance', $app['wws.api_instance']);
