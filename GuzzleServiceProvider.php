@@ -39,15 +39,19 @@ class GuzzleServiceProvider implements ServiceProviderInterface
 
         // Register a simple Guzzle Client object (requires absolute URLs when guzzle.base_url is unset)
         $app['guzzle.client'] = $app->share(function() use ($app) {
-            $client = new \GuzzleHttp\Client($app['guzzle.base_url'] . '{version}', array(
-                'version'        => $app['guzzle.api_version'],
-                'request.options' => array(
+            $client = new \GuzzleHttp\Client([
+                'base_url' => [$app['guzzle.base_url'] . '{version}', ['version' => $app['guzzle.api_version']]],
+                'defaults' => [
                     'headers' => $app['guzzle.default.headers'],
-                    'query'   => $app['guzzle.default.query']
-                )
-            ));
+                    'query'   => $app['guzzle.default.query'],
+                    'auth'    => [],
+                    'proxy'   => ''
+                ]
+            ])
+        ));
+            
 
-            $client->setDefaultHeaders($app['guzzle.default.headers']);
+            //$client->setDefaultHeaders($app['guzzle.default.headers']);
 
             // Add apikey to query before every query
             // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
