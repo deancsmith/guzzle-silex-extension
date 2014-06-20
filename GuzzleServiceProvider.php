@@ -4,7 +4,6 @@ namespace Guzzle;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
-use GuzzleHttp;
 
 /**
  * Guzzle service provider for Silex
@@ -40,7 +39,7 @@ class GuzzleServiceProvider implements ServiceProviderInterface
 
         // Register a simple Guzzle Client object (requires absolute URLs when guzzle.base_url is unset)
         $app['guzzle.client'] = $app->share(function() use ($app) {
-            $client = new Client($app['guzzle.base_url'] . '{version}', array(
+            $client = new GuzzleHttp\Client($app['guzzle.base_url'] . '{version}', array(
                 'version'        => $app['guzzle.api_version'],
                 'request.options' => array(
                     'headers' => $app['guzzle.default.headers'],
