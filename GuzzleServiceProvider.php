@@ -4,6 +4,7 @@ namespace Guzzle;
 
 use Silex\Application;
 use Silex\ServiceProviderInterface;
+use GuzzleHttp\Event\BeforeEvent;
 
 /**
  * Guzzle service provider for Silex
@@ -53,12 +54,12 @@ class GuzzleServiceProvider implements ServiceProviderInterface
 
             // Add apikey to query before every query
             // https://groups.google.com/forum/?hl=en#!topic/guzzle/CTzuOGPdhKE
-            $client->getEmitter()->addListener('client.create_request', function (\Guzzle\Common\Event $e) use ($app) {
+            $client->getEmitter()->on('before', function (BeforeEvent $e) use ($app) {
 
-                $query = $e['request']->getQuery();
+                $query = $e->getRequest()->getQuery();
                 $query->set('api_key', $app['wws.api_key']);
                 $query->set('api_instance', $app['wws.api_instance']);
-                $e['request']->getCurlOptions()->set(CURLOPT_TCP_NODELAY, 1);
+                $e->getRequest()->getCurlOptions()->set(CURLOPT_TCP_NODELAY, 1);
             });
 
             foreach ($app['guzzle.plugins'] as $plugin) {
